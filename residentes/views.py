@@ -148,7 +148,7 @@ def operador_dashboard(request):
 @user_passes_test(es_administrador)
 def admin_dashboard(request):
     """ Dashboard del rol 3 (Administrador). Requiere rol=3. """
-    return render(request, 'residentes/admin_dashboard.html')
+    return render(request, 'admin:index')
 
 # ----------------------------------------------------------------------
 # 3. VISTAS DE DOCUMENTOS
