@@ -1,19 +1,43 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+import requests
+from django.contrib.auth import login,authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .forms import RegisterForm, DocumentoForm
-from .models import Usuario, Domicilio, Contacto, Documento
+from .models import Usuario, Domicilio, Contacto, Documento 
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
+# --- FUNCIONES AUXILIARES DE ROL ---
+def es_operador(user):
+    # Asegúrate de que el modelo Usuario tenga el atributo 'rol'
+    return user.rol == 2 
+
+def es_administrador(user):
+    return user.rol == 3
+
+# --- CONFIGURACIÓN CRÍTICA DEL ESP32 ---
+# 🚨 ¡IMPORTANTE! Reemplaza esto con la IP estática o reservada de tu ESP32.
+# Este enfoque es para desarrollo/LAN. Para Render, la comunicación directa
+# de Django a ESP32 (servidor interno) es difícil si no imposible.
+# Nota: La comunicación ESP32 -> Django (cliente a servidor público) es la recomendada,
+# y esa lógica ya está en tu archivo api_views.py.
+ESP32_IP = "192.168.1.100" # Ejemplo: ajusta esta IP
+
+# ----------------------------------------------------------------------
+# 1. VISTAS RELACIONADAS CON EL LOGIN Y REGISTRO
+# ----------------------------------------------------------------------
 
 def login_view(request):
+    """ Login estándar por credenciales. """
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            # Redirecciona según el rol del usuario
             if user.rol == 3:
-                return redirect('/admin/')
+                return redirect('admin_dashboard') # Redirección a ruta nombrada
             elif user.rol == 2:
                 return redirect('operador_dashboard')
             elif user.rol == 1:
@@ -25,10 +49,32 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
+def login1(request):
+    """ Login alternativo por credenciales (vista para ESP32, si es necesario). """
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            if user.rol == 3:
+                return redirect('admin_dashboard')
+            elif user.rol == 2:
+                return redirect('operador_dashboard')
+            elif user.rol == 1:
+                return redirect('usuario_dashboard')
+            else:
+                return redirect('index')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'residentes/login1.html', {'form': form})
+
 def register(request):
+    """ Registro de un nuevo usuario con datos de domicilio y contacto. """
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
+            # ... (Lógica de guardado de Domicilio, Usuario y Contacto)
             domicilio = Domicilio(
                 calle=form.cleaned_data['calle'],
                 numero_exterior=form.cleaned_data['numero_exterior'],
@@ -65,15 +111,15 @@ def register(request):
                 tipo=form.cleaned_data['tipo']
             )
             contacto.save()
-
+            # Iniciar sesión y redirigir
             login(request, user)
-            return redirect('login1')
+            return redirect('usuario_dashboard')
     else:
         form = RegisterForm()
     return render(request, 'residentes/register.html', {'form': form})
 
-
 def superuser_register(request):
+    """ Registro de superusuario (usado solo en desarrollo/setup). """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -87,32 +133,17 @@ def superuser_register(request):
         form = UserCreationForm()
     return render(request, 'residentes/superuser_register.html', {'form': form})
 
+# ----------------------------------------------------------------------
+# 2. DASHBOARDS Y VISTAS DE USUARIO
+# ----------------------------------------------------------------------
 
 def index(request):
+    """ Vista principal (home). """
     return render(request, 'residentes/index.html')
-
-
-def login1(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            if user.rol == 3:
-                return redirect('/admin/')
-            elif user.rol == 2:
-                return redirect('operador_dashboard')
-            elif user.rol == 1:
-                return redirect('usuario')
-            else:
-                return redirect('index')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'residentes/login1.html', {'form': form})
-
 
 @login_required
 def usuario(request):
+    """ Panel de usuario estándar con sus datos. """
     user = request.user
     return render(request, 'residentes/usuario.html', {
         'user': user,
@@ -120,17 +151,40 @@ def usuario(request):
         'contacto': Contacto.objects.filter(ID_usuario=user).first()
     })
 
+@login_required
+def usuario_dashboard(request):
+    """ Dashboard del rol 1 (Usuario estándar). """
+    return render(request, 'usuario_dashboard.html')
+
+@login_required
+@user_passes_test(es_operador)
+def operador_dashboard(request):
+    """ Dashboard del rol 2 (Operador). Requiere rol=2. """
+    return render(request, 'operador_dashboard.html')
+
+@login_required
+@user_passes_test(es_administrador)
+def admin_dashboard(request):
+    """ Dashboard del rol 3 (Administrador). Requiere rol=3. """
+    return render(request, 'admin_dashboard.html')
+
+# ----------------------------------------------------------------------
+# 3. VISTAS DE DOCUMENTOS
+# ----------------------------------------------------------------------
 
 def buscar_documentos(request):
+    """ Vista de búsqueda de documentos. """
     query = request.GET.get('q', '')
     if query:
-        documentos = Documento.objects.filter(nombre__icontains=query)
+        # Asegúrate de que 'nombre' es el campo correcto para la búsqueda
+        documentos = Documento.objects.filter(nombre__icontains=query) 
     else:
         documentos = Documento.objects.all()
+    
     return render(request, 'buscador.html', {'documentos': documentos})
 
-
 def subir_documento(request):
+    """ Vista para subir documentos usando un formulario. """
     if request.method == 'POST':
         form = DocumentoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -138,32 +192,54 @@ def subir_documento(request):
             return redirect('subir_documento')
     else:
         form = DocumentoForm()
+    
     return render(request, 'subir_documento.html', {'form': form})
 
+# ----------------------------------------------------------------------
+# 4. VISTA DE LOGIN POR SENSOR (PELIGROSA EN RENDER)
+# ----------------------------------------------------------------------
 
-@login_required
-def admin_dashboard(request):
-    if request.user.rol != 3:
-        return redirect('index')
-    return render(request, 'admin_dashboard.html')
+def login_por_sensor(request):
+    """
+    Función de vista que intenta comunicarse con el ESP32.
+    ESTA FUNCIÓN NO FUNCIONARÁ EN RENDER A MENOS QUE EL ESP32 TENGA UNA IP PÚBLICA ESTÁTICA.
+    El método recomendado es ESP32 -> Django API (que ya tienes en api_views.py).
+    """
+    try:
+        url_verificar = f"http://{ESP32_IP}/verificar"
+        print(f"DEBUG: Enviando solicitud a ESP32 en {url_verificar}...")
+        
+        response = requests.get(url_verificar, timeout=15)
+        
+        if response.status_code != 200:
+            return HttpResponse(f"Error al comunicar con ESP32. Código: {response.status_code}", status=500)
 
+        sensor_id_str = response.text.strip()
+        user_id = int(sensor_id_str)
+        
+        if user_id <= 0:
+             return HttpResponse("⛔ ID de sensor no reconocido o tiempo agotado.", status=404)
 
-@login_required
-def operador_dashboard(request):
-    if request.user.rol != 2:
-        return redirect('index')
-    return render(request, 'operador_dashboard.html')
+        usuario = Usuario.objects.get(sensor_id=user_id)
+        
+        if usuario.is_active:
+            login(request, usuario)
+            if usuario.rol == 3:
+                return redirect('admin_dashboard')
+            elif usuario.rol == 2:
+                return redirect('operador_dashboard')
+            elif usuario.rol == 1:
+                return redirect('usuario_dashboard')
+            else:
+                return redirect('index')
+        else:
+            return HttpResponse("Usuario inactivo", status=403)
 
-
-@login_required
-def usuario_dashboard(request):
-    return render(request, 'usuario_dashboard.html')
-
-
-# Funciones auxiliares para verificar roles (Completo)
-def es_operador(user):
-    return user.rol == 2
-
-
-def es_administrador(user):
-    return user.rol == 3
+    except requests.exceptions.Timeout:
+        return HttpResponse("Tiempo de conexión con ESP32 agotado.", status=504)
+    except requests.exceptions.ConnectionError:
+        return HttpResponse("ESP32 no está en línea o la IP es incorrecta.", status=503)
+    except Usuario.DoesNotExist:
+        return HttpResponse(f"⛔ Huella con ID ({user_id}) no registrada.", status=404)
+    except Exception as e:
+        return HttpResponse(f"⚠️ Error inesperado en Django: {str(e)}", status=500)
