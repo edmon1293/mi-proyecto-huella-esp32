@@ -160,7 +160,7 @@ def usuario_dashboard(request):
     return render(request, 'usuario_dashboard.html')
 
 
-# Funciones auxiliares para verificar roles
+# Funciones auxiliares para verificar roles (Completo)
 def es_operador(user):
     return user.rol == 2
 
