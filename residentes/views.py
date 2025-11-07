@@ -39,7 +39,7 @@ def login1(request):
             user = form.get_user()
             login(request, user)
             if user.rol == 3:
-                return redirect('admin_dashboard')
+                return redirect('admin/index')
             elif user.rol == 2:
                 return redirect('operador_dashboard')
             elif user.rol == 1:
