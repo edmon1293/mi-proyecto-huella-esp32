@@ -28,25 +28,7 @@ ESP32_IP = "192.168.1.100" # Ejemplo: ajusta esta IP
 # 1. VISTAS RELACIONADAS CON EL LOGIN Y REGISTRO
 # ----------------------------------------------------------------------
 
-def login_view(request):
-    """ Login estándar por credenciales. """
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            # Redirecciona según el rol del usuario
-            if user.rol == 3:
-                return redirect('admin_dashboard') # Redirección a ruta nombrada
-            elif user.rol == 2:
-                return redirect('operador_dashboard')
-            elif user.rol == 1:
-                return redirect('usuario_dashboard')
-            else:
-                return redirect('index')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+
 
 
 def login1(request):
