@@ -83,21 +83,7 @@ def fingerprint_login(request):
     Espera JSON: 
     {
         "sensor_id": 123,
-        "device_id": "ESP32_001"  (opcional)
-    }
-    
-    Retorna:
-    {
-        "success": true,
-        "message": "Autenticación exitosa",
-        "user": {
-            "id": 5,
-            "email": "usuario@ejemplo.com",
-            "nombre": "Juan",
-            "apellidos": "Pérez",
-            "rol": 2,
-            "rol_nombre": "Operador"
-        }
+        "device_id": "ESP32_001" (opcional)
     }
     """
     try:
@@ -126,6 +112,7 @@ def fingerprint_login(request):
                 }, status=403)
             
             # Autenticar (login) al usuario en Django
+            # Nota: Utilizamos el backend ModelBackend por defecto
             login(request, usuario, backend='django.contrib.auth.backends.ModelBackend')
             
             # Mapear rol a nombre legible
@@ -134,10 +121,6 @@ def fingerprint_login(request):
                 2: 'Operador',
                 3: 'Administrador'
             }
-            
-            # Log del acceso (opcional, para debugging)
-            print(f"✅ Login exitoso - Usuario: {usuario.email}, "
-                  f"Sensor ID: {sensor_id}, Device: {device_id}")
             
             # Retornar información del usuario
             return JsonResponse({
@@ -155,7 +138,6 @@ def fingerprint_login(request):
             
         except Usuario.DoesNotExist:
             # Huella no registrada
-            print(f"❌ Huella no registrada - Sensor ID: {sensor_id}")
             return JsonResponse({
                 'success': False,
                 'error': 'Huella no registrada en el sistema',
@@ -170,7 +152,6 @@ def fingerprint_login(request):
         
     except Exception as e:
         # Error inesperado
-        print(f"⚠️ Error en fingerprint_login: {str(e)}")
         return JsonResponse({
             'success': False,
             'error': f'Error interno: {str(e)}'
@@ -196,6 +177,7 @@ def fingerprint_legacy(request):
         try:
             usuario = Usuario.objects.get(sensor_id=huella_id)
             if usuario.is_active:
+                # Simula la respuesta original
                 return JsonResponse({
                     'acceso': 'permitido',
                     'rol': usuario.rol,

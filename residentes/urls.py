@@ -16,7 +16,7 @@ urlpatterns = [
     path('buscar_documentos/', views.buscar_documentos, name='buscar_documentos'),
     path('subir_documento/', views.subir_documento, name='subir_documento'),
     path('login_por_sensor/', views.login_por_sensor, name='login_por_sensor'),
-    path('api/recibir_huella/', views.recibir_huella, name='recibir_huella'),
+ #  path('api/recibir_huella/', views.recibir_huella, name='recibir_huella'),
 # Endpoint de status (ping)
     path('api/fingerprint/status/', api_views.fingerprint_status, name='api_fingerprint_status'),
     
