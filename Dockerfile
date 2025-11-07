@@ -26,8 +26,12 @@ COPY . .
 # Crear directorio para archivos estáticos
 RUN python manage.py collectstatic --noinput || true
 
+# Copiar script de inicio
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Exponer puerto
 EXPOSE 8000
 
-# Comando de inicio (NOTA: usa "mi_proyecto" porque ese es tu nombre)
-CMD gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 mi_proyecto.wsgi:application
+# Comando de inicio
+CMD ["/app/start.sh"]
