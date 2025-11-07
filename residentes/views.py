@@ -39,9 +39,6 @@ AUTH_TOKEN = "c8fE2p_LzW4qXy7R_hT1jV9aB0kS3mG"
 # La función recibir_huella ha sido REEMPLAZADA por recibir_huella_y_login para mejor claridad.
 
 # Funciones antiguas (mantener por si tienen dependencias en urls.py o templates)
-def recibir_huella(request):
-    # Función obsoleta, redirigida a la nueva API (mantener para evitar errores 500 si la ruta existe)
-    return recibir_huella_y_login(request)
 
 
 def login_view(request):
