@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate 'Django site admin' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{% translate 'My site admin' %}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% block content_main %}
+    {{ content }}
+    {% endblock %}
+</div>
+<div id="content-related">
+    {% block sidebar %}
+    {{ sidebar }}
+    {% endblock %}
+</div>
+{% endblock %}

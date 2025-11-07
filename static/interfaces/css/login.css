@@ -1,0 +1,134 @@
+/* Importar fuentes */
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,300,500,700");
+
+/* Definición de la fuente personalizada Glyphicons Halflings */
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'),
+         url('../fonts/glyphicons-halflings-regular.woff') format('woff'),
+         url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+         url('../fonts/glyphicons-halflings-regular.svg') format('svg');
+}
+
+/* Aplicar fuente globalmente */
+body {
+    font-family: 'Open Sans', sans-serif;
+  background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Estilos existentes */
+.login-container {
+    width: 50%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+}
+.login-content {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    transition: transform 0.5s ease-in-out;
+}
+.login-form {
+    width: 40%;
+    text-align: left;
+    transition: transform 0.5s ease-in-out;
+    color: #676a6c;
+}
+.login-image {
+    width: 55%;
+    overflow: hidden;
+    padding: 0;
+    border-radius: 10px;
+    margin-left: auto;
+    transition: transform 0.5s ease-in-out;
+}
+.login-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+    border: none;
+}
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+.login-form h2 {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    color: #676a6c;
+}
+.login-form a {
+    display: block;
+    margin-top: 10px;
+    color: #007BFF;
+    text-decoration: none;
+}
+a {
+    text-decoration: underline;
+    font-family: 'Open Sans', sans-serif;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+button:hover {
+    background-color: #45a049;
+}
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+.hidden {
+    display: none;
+}
+.links-container {
+    text-align: center;
+    margin-top: 5px;
+}
+.links-container a {
+    display: inline-block;
+    margin: 5px;
+    color: #007BFF;
+    text-decoration: none;
+}
+.password-strength {
+    height: 5px;
+    margin-top: 5px;
+}
+.password-strength-text {
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}

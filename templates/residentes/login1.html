@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    <style>
+        /* Importar fuentes */
+        @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
+        @import url("https://fonts.googleapis.com/css?family=Roboto:400,300,500,700");
+
+        /* Aplicar fuente globalmente */
+        body {
+            background-color: #ffffff; /* Fondo blanco */
+            color: #000000; /* Texto negro */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilos del contenedor de login */
+        .login-container {
+            width: 60%; /* Ajusta el ancho en porcentaje del contenedor */
+            max-width: 400px; /* Ancho máximo del contenedor */
+            height: 65%; /* Ajusta la altura en porcentaje del contenedor */
+            max-height: 500px; /* Altura máxima del contenedor */
+            margin: 0 auto; /* Centra horizontalmente el contenedor */
+            padding: 20px;
+            border: 1px solid #9900ff; /* Borde de color morado */
+            border-radius: 10px; /* Bordes redondeados */
+            text-align: center; /* Texto centrado */
+            position: absolute; /* Posicionamiento absoluto */
+            top: 50%; /* Posiciona desde la parte superior */
+            left: 50%; /* Posiciona desde el lado izquierdo */
+            transform: translate(-50%, -50%); /* Centra el contenedor tanto vertical como horizontalmente */
+            display: flex; /* Usa Flexbox para organizar los elementos internos */
+            flex-direction: column; /* Organiza los elementos internos en una columna */
+            align-items: center; /* Centra los elementos internos horizontalmente */
+            justify-content: center; /* Centra los elementos internos verticalmente */
+        }
+
+        /* Estilos para los elementos del formulario */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 350px; /* Ancho de los campos de entrada */
+            padding: 10px; /* Espaciado interno */
+            margin: 5px 0; /* Espacio superior e inferior */
+            border: 1px solid #8a16dc; /* Borde de color gris claro */
+            border-radius: 5px; /* Bordes redondeados */
+            font-family: 'Roboto', sans-serif; /* Fuente de los campos de entrada */
+            background-color: #ffffff; /* Fondo blanco por defecto */
+            transition: background-color 0.3s, border-color 0.3s; /* Transición suave para el cambio de fondo y borde */
+        }
+
+        /* Estilo para los campos de entrada en foco */
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            background-color: #dbefff; /* Fondo azul rey cuando está en foco */
+            border: 1px solid #73d4fd; /* Borde verde cuando está en foco */
+            outline: none; /* Elimina el contorno predeterminado del navegador */
+        }
+
+        button {
+            background-color: #007BFF; /* Color azul */
+            color: white; /* Color del texto blanco */
+            padding: 8px 15px; /* Espaciado interno */
+            border: none; /* Sin borde */
+            border-radius: 5px; /* Bordes redondeados */
+            cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+            width: 100%; /* Ajusta el ancho del botón al contenedor */
+            max-width: 370px; /* Ancho máximo del botón */
+            box-sizing: border-box; /* Incluye padding y border en el tamaño total */
+            font-family: 'Open Sans', sans-serif; /* Fuente del botón */
+            margin: 20px 0; /* Ajusta el margen superior e inferior para controlar la posición en altura */
+        }
+
+        button:hover {
+            background-color: #9900ff;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Estilos para los enlaces de acción del formulario */
+        .form-actions {
+            display: flex; /* Usa Flexbox para organizar los elementos internos */
+            flex-direction: column; /* Organiza los elementos internos en una columna */
+            align-items: center; /* Centra los elementos internos horizontalmente */
+            margin-top: 10px; /* Espacio superior */
+        }
+
+        .form-actions a {
+            display: block; /* Asegura que los enlaces estén en líneas separadas */
+            margin-top: 10px; /* Espacio superior entre los enlaces */
+            color: #007BFF; /* Color azul */
+            text-decoration: none; /* Elimina el subrayado del texto */
+        }
+
+        /* Estilo para el checkbox y la etiqueta de mostrar contraseña */
+        .form-group input[type="checkbox"] {
+            margin-right: 5px; /* Espacio a la derecha del checkbox */
+        }
+
+        .form-group label[for="showPassword"] {
+            margin-left: 5px; /* Espacio a la izquierda del texto del checkbox */
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-content">
+            
+            <h2 class="login-title">Iniciar sesión</h2>
+            <form method="post" action="{% url 'login1' %}">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    <label for="username">Email:</label>
+                    <input type="text" id="username" name="username" required value="{{ form.username.value }}">
+                    <span id="emailError" class="error-message">{{ form.username.errors }}</span>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
+                    <div>
+                        <input type="checkbox" id="showPassword" onclick="togglePassword('password')"> 
+                        <label for="showPassword">Mostrar contraseña</label>
+                    </div>
+                    <span id="passwordError" class="error-message">{{ form.password.errors }}</span>
+                </div>
+                <div class="form-actions">
+                    <a href="{% url 'register' %}" id="createAccountLink">Crea tu cuenta</a>
+                    <a href="#">¿Has olvidado tu contraseña?</a>
+                </div>
+                <button type="submit">Inicia sesión</button>
+                
+            </form>
+        </div>
+        <form method="get" action="{% url 'login_por_sensor' %}">
+    <button type="submit">Entrar con huella</button>
+</form>
+    </div>
+    <script>
+        function togglePassword(id) {
+            var input = document.getElementById(id);
+            input.type = (input.type === 'password') ? 'text' : 'password';
+        }
+    </script>
+
+
+</body>
+</html>
+
+
+

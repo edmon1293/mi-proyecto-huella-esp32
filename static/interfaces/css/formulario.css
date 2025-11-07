@@ -1,0 +1,118 @@
+/* Estilos personalizados para el formulario */
+
+
+
+.container {
+    max-width: 45% !important; /* Reducir el ancho al 45% del tamaño actual */
+    margin: 50px auto; /* Ajustar el padding para controlar el espacio interno */
+    padding: 40px; /* Ajustar el padding para controlar el espacio interno */
+    border: 1px solid transparent; /* Hacer el borde transparente */
+    border-radius: 10px;
+    box-shadow: none; /* Eliminar la sombra */
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente blanco */
+    overflow: hidden; /* Ocultar contenido fuera del contenedor */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Animación para el título */
+h2.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.form-group {
+    opacity: 0;
+    transform: translateX(-50%);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+    position: relative;
+    overflow: hidden; /* Ocultar contenido que se desborda */
+}
+
+.form-group.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.custom-file-label::after {
+    content: "Buscar"; /* Texto del botón de selección de archivo */
+}
+
+label {
+    display: none; /* Ocultar etiquetas normales */
+}
+
+/* Estilo para los campos de entrada */
+input[type="text"],
+input[type="tel"],
+input[type="file"] {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    padding: 12px 10px; /* Relleno interno */
+    margin-bottom: 10px; /* Margen inferior */
+    border: 1px solid #cccccc; /* Borde del campo */
+    border-radius: 5px; /* Bordes redondeados */
+    position: relative; /* Posición relativa para los placeholders absolutos */
+    transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+}
+
+/* Estilo para los placeholders dentro de los campos de entrada */
+input[type="text"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="file"]::placeholder {
+    position: absolute; /* Posición absoluta dentro del campo */
+    top: 50%; /* Alineación vertical en el centro */
+    left: 10px; /* Espacio a la izquierda del campo */
+    transform: translateY(-50%); /* Ajuste fino para centrar verticalmente */
+    color: #999999; /* Color del texto del placeholder */
+    font-size: 14px; /* Tamaño del texto del placeholder */
+    font-weight: normal; /* Peso normal de la fuente del placeholder */
+}
+
+/* Estilo para los campos cuando tienen contenido */
+input[type="text"].filled,
+input[type="tel"].filled,
+input[type="file"].filled {
+    background-color: #e7f0ff; /* Color de fondo azul claro cuando hay contenido */
+}
+
+/* Estilo para las etiquetas de los campos de subir archivos */
+.custom-file-label {
+    color: #999999; /* Color del texto */
+    font-size: 14px; /* Tamaño del texto */
+    font-weight: normal; /* Peso de la fuente */
+}
+
+/* Estilo específico para el botón de enviar */
+button[type="submit"] {
+    width: 30%; /* Ancho del botón */
+    padding: 10px; /* Relleno del botón */
+    margin-top: 20px; /* Margen superior */
+    background-color: #4b1ec5; /* Color de fondo del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambio de cursor al pasar por encima */
+    /* Centrar el botón horizontalmente */
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    opacity: 0;
+    transform: translateY(50%);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+/* Animación para el botón de enviar */
+button[type="submit"].visible {
+    opacity: 1;
+    transform: translateY(0);
+}

@@ -1,0 +1,99 @@
+/* Estilo del cuerpo de la página */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Marco del formulario */
+.form-frame {
+    border: 2px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Título del sistema */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Grupo de formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Etiquetas de los formularios */
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Selectores y campos de entrada */
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Estilo de los botones */
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #060706;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Efecto hover para los botones */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Lista de archivos subidos */
+.file-list {
+    margin-top: 20px;
+}
+
+/* Elementos de la lista de archivos */
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+/* Botón de eliminar archivos */
+.file-item button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Efecto hover para el botón de eliminar */
+.file-item button:hover {
+    background-color: #e53935;
+}

@@ -1,0 +1,222 @@
+/* Estilo para el fondo de la página */
+body {
+    background-color: #d2c8c8; /* Cambia este color al color de fondo deseado */
+}
+
+/* Estilo para la tarjeta de perfil */
+.profile-card {
+    background-color: #ffffff; /* Color de fondo de la tarjeta de perfil */
+    border-radius: 10px; /* Bordes redondeados de la tarjeta */
+    padding: 40px; /* Espacio interno alrededor del contenido de la tarjeta */
+    width: 90%; /* Ancho de la tarjeta en relación al contenedor padre */
+    margin: 50px auto; /* Márgenes superior e inferior de 50px y centrado horizontal */
+    display: flex; /* Usar flexbox para organizar el contenido de la tarjeta */
+    align-items: center; /* Alinear el contenido verticalmente al centro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para dar profundidad */
+}
+
+/* Estilo para el contenedor de la imagen de perfil */
+.profile-image {
+    width: 200px; /* Ancho del contenedor de la imagen de perfil */
+    height: 200px; /* Altura del contenedor de la imagen de perfil */
+    border-radius: 50%; /* Bordes redondeados en forma de círculo */
+    margin-right: 20px; /* Espacio a la derecha del contenedor de la imagen */
+    flex-shrink: 0; /* Evitar que el contenedor de la imagen se encoja en tamaño */
+    overflow: hidden; /* Ocultar cualquier contenido que sobresalga del contenedor circular */
+    position: relative; /* Posicionamiento relativo para posicionar el ícono de subida */
+}
+
+/* Estilo para la imagen dentro del contenedor de la imagen de perfil */
+.profile-image img {
+    width: 100%; /* Ancho de la imagen ajustado al contenedor */
+    height: 100%; /* Altura de la imagen ajustada al contenedor */
+    object-fit: cover; /* Asegura que la imagen cubra completamente el contenedor sin deformarse */
+}
+
+/* Estilo para el contenedor de la información del perfil */
+.profile-info {
+    text-align: left; /* Alinea el texto a la izquierda */
+    margin-top: 0; /* Sin margen superior */
+    border: 2px solid #f0f0f0; /* Borde blanco de 2px de grosor */
+    padding: 10px; /* Espacio interno alrededor del contenido */
+    border-radius: 10px; /* Bordes ligeramente redondeados */
+    font-family: 'Arial', sans-serif; /* Tipo de letra para el texto */
+    font-size: 11px; /* Tamaño de la letra */
+    flex-grow: 1; /* Permite que el contenedor de la información se expanda para ocupar el espacio disponible */
+    margin-left: 20px; /* Espacio entre el contenedor de la imagen y el contenedor de la información */
+    position: relative; /* Posicionamiento relativo para el botón de edición */
+}
+
+/* Estilo para el título dentro de la información del perfil */
+.profile-info h2 {
+    margin-bottom: 20px; /* Espacio inferior alrededor del título */
+    font-family: 'Georgia', serif; /* Tipo de letra para el título */
+    font-size: 16px; /* Tamaño de la letra del título */
+}
+
+/* Estilo para el botón de edición */
+.edit-button {
+    position: absolute; /* Posicionamiento absoluto dentro del contenedor de la información */
+    top: 10px; /* Espacio desde la parte superior del contenedor (ajustar según sea necesario) */
+    right: 15px; /* Espacio desde la parte derecha del contenedor (ajustar según sea necesario) */
+    padding: 8px 16px; /* Espacio interno del botón (arriba y abajo, izquierda y derecha) */
+    font-size: 14px; /* Tamaño de la letra del botón */
+    border: 1px solid #007bff; /* Borde azul de 1px de grosor */
+    border-radius: 8px; /* Bordes redondeados del botón */
+    background-color: #1973d3; /* Fondo azul del botón */
+    color: white; /* Color del texto del botón */
+    cursor: pointer; /* Cursor de mano al pasar sobre el botón */
+    font-family: 'Arial', sans-serif;
+    transition: background-color 0.3s, border-color 0.3s; /* Transición suave para los cambios de color */
+}
+
+/* Cambiar el color de fondo y del borde del botón al pasar el ratón */
+.edit-button:hover {
+    background-color: #498ed8; /* Fondo azul más oscuro */
+    border-color: #000000; /* Borde azul más oscuro */
+}
+
+/* Estilo para el botón de edición numer 2 */
+.edit-button-num2 {
+    position: absolute; /* Posicionamiento absoluto dentro del contenedor de la información */
+    top: 10px; /* Espacio desde la parte superior del contenedor (ajustar según sea necesario) */
+    right: 130px; /* Espacio desde la parte derecha del contenedor (ajustar según sea necesario) */
+    padding: 8px 16px; /* Espacio interno del botón (arriba y abajo, izquierda y derecha) */
+    font-size: 14px; /* Tamaño de la letra del botón */
+    border: 1px solid #007bff; /* Borde azul de 1px de grosor */
+    border-radius: 8px; /* Bordes redondeados del botón */
+    background-color: #1973d3; /* Fondo azul del botón */
+    color: white; /* Color del texto del botón */
+    cursor: pointer; /* Cursor de mano al pasar sobre el botón */
+    font-family: 'Arial', sans-serif;
+    transition: background-color 0.3s, border-color 0.3s; /* Transición suave para los cambios de color */
+}
+
+/* Cambiar el color de fondo y del borde del botón al pasar el ratón */
+.edit-button-num2:hover {
+    background-color: #498ed8; /* Fondo azul más oscuro */
+    border-color: #000000; /* Borde azul más oscuro */
+}
+
+/* Estilo para el botón de edición numer 3 */
+.edit-button-num3 {
+    position: absolute; /* Posicionamiento absoluto dentro del contenedor de la información */
+    top: 10px; /* Espacio desde la parte superior del contenedor (ajustar según sea necesario) */
+    right: 289px; /* Espacio desde la parte derecha del contenedor (ajustar según sea necesario) */
+    padding: 8px 16px; /* Espacio interno del botón (arriba y abajo, izquierda y derecha) */
+    font-size: 14px; /* Tamaño de la letra del botón */
+    border: 1px solid #007bff; /* Borde azul de 1px de grosor */
+    border-radius: 8px; /* Bordes redondeados del botón */
+    background-color: #1973d3; /* Fondo azul del botón */
+    color: white; /* Color del texto del botón */
+    cursor: pointer; /* Cursor de mano al pasar sobre el botón */
+    font-family: 'Arial', sans-serif;
+    transition: background-color 0.3s, border-color 0.3s; /* Transición suave para los cambios de color */
+}
+
+/* Cambiar el color de fondo y del borde del botón al pasar el ratón */
+.edit-button-num3:hover {
+    background-color: #498ed8; /* Fondo azul más oscuro */
+    border-color: #000000; /* Borde azul más oscuro */
+}
+
+/* Estilo para la segunda tarjeta de perfil */
+.profile-card-suggestion {
+    background-color: #ffffff; /* Color de fondo de la tarjeta de sugerencia */
+    border-radius: 10px; /* Bordes redondeados de la tarjeta */
+    padding: 40px; /* Espacio interno alrededor del contenido de la tarjeta */
+    width: 90%; /* Ancho de la tarjeta en relación al contenedor padre */
+    margin: 50px auto; /* Márgenes superior e inferior de 50px y centrado horizontal */
+    display: flex; /* Usar flexbox para organizar el contenido de la tarjeta */
+    align-items: center; /* Alinear el contenido verticalmente al centro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para dar profundidad */
+    height: 300px; /* Altura fija de la tarjeta */
+    position: relative; /* Posicionamiento relativo para el título absoluto */
+}
+
+/* Estilo para el título de la segunda tarjeta */
+.profile-card-suggestion h2 {
+    position: absolute; /* Posicionamiento absoluto dentro del contenedor de la tarjeta */
+    top: 20px; /* Espacio desde la parte superior de la tarjeta */
+    left: 20px; /* Espacio desde la parte izquierda de la tarjeta */
+    margin: 0; /* Sin margen alrededor del título */
+    font-size: 1.5em; /* Tamaño de la letra del título */
+}
+
+/* Estilo para el modal (cuadro emergente) */
+.modal {
+    display: none; /* Ocultar el modal por defecto */
+    position: fixed; /* Mantener el modal en una posición fija en la pantalla */
+    z-index: 1; /* Asegurar que el modal esté en el frente de otros elementos */
+    left: 0; /* Posicionar el modal desde el borde izquierdo */
+    top: 0; /* Posicionar el modal desde el borde superior */
+    width: 100%; /* Ancho completo de la pantalla */
+    height: 100%; /* Altura completa de la pantalla */
+    overflow: auto; /* Habilitar el desplazamiento si el contenido es más grande que la ventana */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente negro */
+}
+
+/* Estilo para el contenido del modal */
+.modal-content {
+    background-color: #fefefe; /* Fondo blanco del contenido del modal */
+    margin: 15% auto; /* Márgenes superior e inferior de 15% y centrado horizontal */
+    padding: 20px; /* Espacio interno alrededor del contenido del modal */
+    border: 1px solid #888; /* Borde gris claro de 1px de grosor */
+    width: 80%; /* Ancho del contenido del modal en relación al contenedor padre */
+    max-width: 500px; /* Ancho máximo del contenido del modal */
+    height: auto; /* Altura automática en función del contenido */
+    border-radius: 10px; /* Bordes redondeados del contenido del modal */
+}
+
+/* Estilo para el botón de cierre del modal */
+.close {
+    color: #aaa; /* Color del texto del botón de cierre */
+    float: right; /* Posicionar el botón a la derecha */
+    font-size: 28px; /* Tamaño de la letra del botón de cierre */
+    font-weight: bold; /* Negrita en el texto del botón de cierre */
+}
+
+/* Cambiar el color y cursor del botón de cierre cuando se pasa el ratón sobre él */
+.close:hover,
+.close:focus {
+    color: black; /* Cambiar color a negro al pasar el ratón o enfocar el botón */
+    text-decoration: none; /* Sin subrayado en el texto del botón */
+    cursor: pointer; /* Cambiar el cursor a una mano para indicar clicabilidad */
+}
+
+/* Estilo para el formulario dentro del modal */
+.modal-content form {
+    display: flex; /* Usar flexbox para organizar los elementos del formulario */
+    flex-direction: column; /* Organizar los elementos del formulario en una columna */
+}
+
+/* Estilo para las etiquetas dentro del formulario del modal */
+.modal-content label {
+    margin-top: 10px; /* Espacio superior alrededor de las etiquetas */
+    margin-bottom: 5px; /* Espacio inferior alrededor de las etiquetas */
+    font-weight: bold; /* Negrita en el texto de las etiquetas */
+}
+
+/* Estilo para los campos de entrada dentro del formulario del modal */
+.modal-content input {
+    padding: 8px; /* Espacio interno alrededor del texto en los campos de entrada */
+    border: 1px solid #ccc; /* Borde gris claro de 1px de grosor */
+    border-radius: 5px; /* Bordes ligeramente redondeados en los campos de entrada */
+}
+
+/* Estilo para el contenedor de la dirección en el formulario */
+.address-container {
+    display: flex; /* Usar flexbox para organizar los elementos dentro del contenedor */
+    gap: 20px; /* Espacio entre los elementos dentro del contenedor */
+    align-items: flex-end; /* Alinear los elementos al final verticalmente */
+}
+
+/* Estilo para cada ítem de dirección en el formulario */
+.address-item {
+    flex: 1; /* Permite que el ítem de dirección se expanda para ocupar el espacio disponible */
+}
+
+/* Estilo para el ítem de dirección pequeño en el formulario */
+.address-item.small {
+    flex: 0 0 100px; /* Fijar el ancho del ítem pequeño a 100px */
+}

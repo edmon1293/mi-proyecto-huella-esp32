@@ -1,0 +1,33 @@
+# Usar Python 3.11 como base
+FROM python:3.11-slim
+
+# Variables de entorno para Python
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements
+COPY requirements.txt .
+
+# Instalar dependencias de Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el proyecto
+COPY . .
+
+# Crear directorio para archivos estáticos
+RUN python manage.py collectstatic --noinput || true
+
+# Exponer puerto
+EXPOSE 8000
+
+# Comando de inicio (NOTA: usa "mi_proyecto" porque ese es tu nombre)
+CMD gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 mi_proyecto.wsgi:application
