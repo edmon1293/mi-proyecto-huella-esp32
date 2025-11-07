@@ -17,119 +17,98 @@ from django.contrib.auth import login
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Usuario
+import json
+import logging
 
-# CONFIGURACIÓN CRÍTICA
-# *****************************************************************
-# 🚨 ¡IMPORTANTE! Reemplaza esto con la IP estática o reservada de tu ESP32.
-# Si el ESP32 cambia de IP, esta vista fallará.
-ESP32_IP = "192.168.1.18" # Ejemplo: ajusta esta IP
-# *****************************************************************
+logger = logging.getLogger(__name__)
+
+ #CONFIGURACIÓN CRÍTICA DEL TOKEN Y EL NUEVO ENDPOINT API
+# ----------------------------------------------------------------------------------
+
+# CRÍTICO: Debe coincidir con el token en el código del ESP32
+# ⚠️ IMPORTANTE: REEMPLAZA ESTO CON UN VALOR REAL Y SEGURO (MÍNIMO 20 CARACTERES) ⚠️
+AUTH_TOKEN = "c8fE2p_LzW4qXy7R_hT1jV9aB0kS3mG" 
 
 @csrf_exempt
-def recibir_huella(request):
+def recibir_huella_y_login(request):
+    """
+    NUEVO ENDPOINT API: Recibe el POST del ESP32 con el sensor_id y el token.
+    Este endpoint verifica la autenticidad del ESP32 y si el ID existe.
+    """
     if request.method == 'POST':
-        import json
-        data = json.loads(request.body)
-        huella_id = data.get('huella_id')
-
-        if huella_id is None:
-            return JsonResponse({'error': 'No se recibió huella_id'}, status=400)
-
         try:
-            usuario = Usuario.objects.get(sensor_id=huella_id)
-            if usuario.is_active:
-                return JsonResponse({'acceso': 'permitido', 'rol': usuario.rol})
-            else:
-                return JsonResponse({'acceso': 'denegado', 'motivo': 'usuario inactivo'}, status=403)
-        except Usuario.DoesNotExist:
-            return JsonResponse({'acceso': 'denegado', 'motivo': 'ID no registrado'}, status=404)
-
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-
-
-def login_por_sensor(request):
-    """
-    Función de vista que inicia la verificación de huella en el ESP32
-    y autentica al usuario en Django si el ID es reconocido (incluyendo el ID 0 del administrador).
-    """
-    # IP del ESP32 (Asegúrate de que coincida con la IP actual del ESP32)
-    ESP32_IP = "192.168.1.18" 
-
-    # Tiempo de espera en segundos. Debe ser MAYOR que el tiempo de espera del ESP32 (5s).
-    TIMEOUT_SECONDS = 6 
-
-    try:
-        # 1. Enviar solicitud al ESP32 para iniciar la verificación
-        url_verificar = f"http://{ESP32_IP}/verificar"
-        
-        print(f"DEBUG: Enviando solicitud a ESP32 en {url_verificar} para verificar huella (Timeout: {TIMEOUT_SECONDS}s).")
-        
-        # Aumentamos el timeout para dar margen, ahora que el ESP32 responde en 5s.
-        response = requests.get(url_verificar, timeout=TIMEOUT_SECONDS)
-        
-        # 2. Procesar la respuesta del ESP32
-        if response.status_code != 200:
-            return HttpResponse(f"Error al comunicar con ESP32. Código HTTP: {response.status_code}", status=500)
-
-        # La respuesta esperada es un ID numérico (ej: "0", "5")
-        sensor_id_str = response.text.strip()
-        user_id = int(sensor_id_str)
-        
-        # CRÍTICO: Solo se bloquea si el ID es NEGATIVO. 
-        # Si user_id es 0 (Admin) o positivo, continúa la autenticación.
-        if user_id < 0:
-             return HttpResponse("⛔ ID de sensor no reconocido o inválido.", status=404)
-
-        # Si user_id es 0, significa que el ESP32 agotó el tiempo O que encontró al Admin (ID 0).
-        if user_id == 0:
-            # Ahora necesitamos verificar si fue por timeout o si fue el administrador.
-            # En nuestro caso, si se agotó el tiempo en el ESP32, el ESP32 envía 0.
-            # Si el usuario es ID 0, procederá a la autenticación (punto 3).
+            data = json.loads(request.body)
+            sensor_id = data.get('sensor_id')
+            token = data.get('token')
+            # Capturamos el ID del dispositivo (MAC Address) que el ESP32 está enviando
+            device_id = data.get('device_id', 'N/A') 
             
-            # Si el ESP32 devuelve 0 Y no existe el usuario 0, significa timeout o huella no encontrada.
-            # Pero dado que el Admin tiene ID 0, intentamos la autenticación:
-            pass
-        
-        # 3. Autenticar al usuario en Django usando el ID
-        usuario = Usuario.objects.get(sensor_id=user_id)
-        
-        if usuario.is_active:
-            # Autenticación exitosa
-            login(request, usuario)
+            # 1. Verificación de Seguridad (Token)
+            if token != AUTH_TOKEN:
+                logger.warning(f"Intento de acceso no autorizado con token: {token}")
+                return JsonResponse({"success": False, "message": "Token de dispositivo inválido"}, status=401)
             
-            # Redirección según el rol
-            if usuario.rol == 3: # Rol de Administrador
-                return redirect('/admin/')
-            elif usuario.rol == 2: # Rol de Operador
-                return redirect('operador_dashboard')
-            elif usuario.rol == 1: # Rol de Usuario Estándar
-                return redirect('usuario')
-            else:
-                return redirect('index') # Redirección por defecto
-        else:
-            return HttpResponse("Usuario inactivo", status=403)
+            # 2. Validación de ID (sensor_id)
+            if sensor_id is None or not isinstance(sensor_id, int) or sensor_id < 1: # Si es 0 o menor, es error/timeout
+                logger.error(f"ID de sensor inválido o de timeout recibido: {sensor_id}")
+                return JsonResponse({"success": False, "message": "ID de sensor no válido o no encontrado"}, status=400)
 
-    except requests.exceptions.Timeout:
-        return HttpResponse(f"Tiempo de conexión con ESP32 agotado (Timeout en {TIMEOUT_SECONDS}s).", status=504)
+            # 3. Búsqueda de Usuario
+            try:
+                user = Usuario.objects.get(sensor_id=sensor_id)
+                
+                logger.info(f"Huella verificada para el usuario: {user.email} (ID: {user.sensor_id})")
+                
+                # Devuelve éxito. El login de sesión en el navegador se hará por un método alternativo
+                # (o si se usa un WebSocket/Polling en el futuro). Por ahora, solo confirmamos la huella.
+                return JsonResponse({
+                    "success": True, 
+                    "message": "Huella verificada con éxito", 
+                    "sensor_id": sensor_id,
+                    "user_id": user.id,
+                    "nombre": user.nombre
+                })
+                
+            except Usuario.DoesNotExist:
+                logger.warning(f"Huella no encontrada en la base de datos para ID: {sensor_id}")
+                return JsonResponse({"success": False, "message": "Huella no registrada"}, status=404)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message": "Formato JSON inválido"}, status=400)
+        except Exception as e:
+            logger.error(f"Error interno en la vista: {e}", exc_info=True)
+            return JsonResponse({"success": False, "message": "Error interno del servidor"}, status=500)
+            
+    return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
 
-    except requests.exceptions.ConnectionError:
-        return HttpResponse("ESP32 no está en línea o la IP es incorrecta (Error de conexión de red).", status=503)
 
-    except Usuario.DoesNotExist:
-        # Aquí caerá si:
-        # 1. El ID de sensor encontrado (user_id) no está en la base de datos.
-        # 2. El ESP32 devolvió 0 (Timeout) Y NO existe un usuario con sensor_id=0. 
-        #    Si existe el Admin (ID 0), esto no ocurrirá para el caso de Admin.
-        if user_id == 0:
-             return HttpResponse("⛔ Tiempo agotado en la espera de huella o el administrador no existe.", status=404)
-        else:
-             return HttpResponse(f"⛔ Huella con ID ({user_id}) no registrada en el sistema.", status=404)
+# Función que el USUARIO visitará en el navegador
+def fingerprint_login_client(request):
+    """
+    Vista que el usuario abre en el navegador y le pide poner el dedo.
+    
+    NOTA: La redirección automática a /admin/ o /operador/ es compleja
+    sin WebSockets. Por ahora, solo muestra el mensaje.
+    """
+    if request.user.is_authenticated:
+        return redirect('index') 
 
-    except Exception as e:
-        # Captura cualquier otro error
-        return HttpResponse(f"⚠️ Error inesperado en Django: {str(e)}", status=500)
+    # Aquí deberías renderizar una plantilla que diga: "Ponga el dedo en el sensor."
+    return render(request, 'residentes/esperando_huella.html', {'message': 'Por favor, ponga su dedo en el sensor biométrico.'})
 
+
+
+# ----------------------------------------------------------------------------------
+# FUNCIONES OBSOLETAS O ANTERIORES
+# ----------------------------------------------------------------------------------
+
+# La función login_por_sensor ha sido ELIMINADA por ser obsoleta en el ambiente Render.
+# La función recibir_huella ha sido REEMPLAZADA por recibir_huella_y_login para mejor claridad.
+
+# Funciones antiguas (mantener por si tienen dependencias en urls.py o templates)
+def recibir_huella(request):
+    # Función obsoleta, redirigida a la nueva API (mantener para evitar errores 500 si la ruta existe)
+    return recibir_huella_y_login(request)
 
 
 def login_view(request):
