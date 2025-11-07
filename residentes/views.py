@@ -18,28 +18,30 @@ def es_administrador(user):
 
 # --- CONFIGURACIÓN CRÍTICA DEL ESP32 ---
 # 🚨 ¡IMPORTANTE! Reemplaza esto con la IP estática o reservada de tu ESP32.
-# Este enfoque es para desarrollo/LAN. Para Render, la comunicación directa
-# de Django a ESP32 (servidor interno) es difícil si no imposible.
-# Nota: La comunicación ESP32 -> Django (cliente a servidor público) es la recomendada,
-# y esa lógica ya está en tu archivo api_views.py.
 ESP32_IP = "192.168.1.100" # Ejemplo: ajusta esta IP
 
 # ----------------------------------------------------------------------
 # 1. VISTAS RELACIONADAS CON EL LOGIN Y REGISTRO
 # ----------------------------------------------------------------------
 
-
-
-
+# NOTE: Asumo que solo usarás login1, pero mantengo la estructura completa.
 def login1(request):
-    """ Login alternativo por credenciales (vista para ESP32, si es necesario). """
+    """ Login alternativo por credenciales. """
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        # Se usa request, data para que el formulario pueda validar la sesión
+        form = AuthenticationForm(request, data=request.POST) 
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            if user.rol == 3:
-                return redirect('admin/index')
+            
+            # 🔑 CORRECCIÓN CLAVE: Redirigir Superusuario al panel nativo
+            if user.is_superuser:
+                # Usamos el nombre de URL nativo de Django Admin
+                return redirect('admin:index') 
+                
+            # Redireccionar según el rol (para usuarios rol 3 que NO son superuser)
+            elif user.rol == 3:
+                return redirect('admin_dashboard')
             elif user.rol == 2:
                 return redirect('operador_dashboard')
             elif user.rol == 1:
@@ -48,7 +50,8 @@ def login1(request):
                 return redirect('index')
     else:
         form = AuthenticationForm()
-
+        
+    # CORRECCIÓN DE RUTA DE PLANTILLA
     return render(request, 'residentes/login1.html', {'form': form})
 
 def register(request):
@@ -136,19 +139,22 @@ def usuario(request):
 @login_required
 def usuario_dashboard(request):
     """ Dashboard del rol 1 (Usuario estándar). """
-    return render(request, 'usuario_dashboard.html')
+    # 🔑 CORRECCIÓN DE RUTA DE PLANTILLA
+    return render(request, 'residentes/usuario_dashboard.html')
 
 @login_required
 @user_passes_test(es_operador)
 def operador_dashboard(request):
     """ Dashboard del rol 2 (Operador). Requiere rol=2. """
-    return render(request, 'operador_dashboard.html')
+    # 🔑 CORRECCIÓN DE RUTA DE PLANTILLA
+    return render(request, 'residentes/operador_dashboard.html')
 
 @login_required
 @user_passes_test(es_administrador)
 def admin_dashboard(request):
     """ Dashboard del rol 3 (Administrador). Requiere rol=3. """
-    return render(request, 'admin/index')
+    # 🔑 CORRECCIÓN DE RUTA DE PLANTILLA (Asumimos que el custom admin está aquí)
+    return render(request, 'residentes/admin_dashboard.html')
 
 # ----------------------------------------------------------------------
 # 3. VISTAS DE DOCUMENTOS
@@ -163,7 +169,8 @@ def buscar_documentos(request):
     else:
         documentos = Documento.objects.all()
     
-    return render(request, 'buscador.html', {'documentos': documentos})
+    # 🔑 CORRECCIÓN DE RUTA DE PLANTILLA
+    return render(request, 'residentes/buscador.html', {'documentos': documentos})
 
 def subir_documento(request):
     """ Vista para subir documentos usando un formulario. """
@@ -175,7 +182,8 @@ def subir_documento(request):
     else:
         form = DocumentoForm()
     
-    return render(request, 'subir_documento.html', {'form': form})
+    # 🔑 CORRECCIÓN DE RUTA DE PLANTILLA
+    return render(request, 'residentes/subir_documento.html', {'form': form})
 
 # ----------------------------------------------------------------------
 # 4. VISTA DE LOGIN POR SENSOR (PELIGROSA EN RENDER)
@@ -184,8 +192,6 @@ def subir_documento(request):
 def login_por_sensor(request):
     """
     Función de vista que intenta comunicarse con el ESP32.
-    ESTA FUNCIÓN NO FUNCIONARÁ EN RENDER A MENOS QUE EL ESP32 TENGA UNA IP PÚBLICA ESTÁTICA.
-    El método recomendado es ESP32 -> Django API (que ya tienes en api_views.py).
     """
     try:
         url_verificar = f"http://{ESP32_IP}/verificar"
@@ -206,7 +212,12 @@ def login_por_sensor(request):
         
         if usuario.is_active:
             login(request, usuario)
-            if usuario.rol == 3:
+            
+            # 🔑 CORRECCIÓN CLAVE: Redirigir Superusuario al panel nativo
+            if usuario.is_superuser:
+                return redirect('admin:index')
+                
+            elif usuario.rol == 3:
                 return redirect('admin_dashboard')
             elif usuario.rol == 2:
                 return redirect('operador_dashboard')
